@@ -1,7 +1,10 @@
-let books = [
-    { id: 1, title: "Book One", authorId: 1 },
-    { id: 2, title: "Book Two", authorId: 2 }
-  ];
-  
-  module.exports = books;
-  
+const mongoose = require("mongoose");
+
+const bookSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  authorId: { type: mongoose.Schema.Types.ObjectId, ref: 'Author', required: true }
+});
+
+const Book = mongoose.model("Book", bookSchema);
+
+module.exports = Book;
