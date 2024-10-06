@@ -1,14 +1,16 @@
-const express = require('express');
+const express = require("express");
+const {
+  getAllBooks,
+  getBookById,
+  addBook,
+  updateBook,
+  deleteBook,
+} = require("../controllers/bookController");
+const { protect } = require("../middleware/authMiddleware");
+
 const router = express.Router();
-const bookController = require('../controllers/bookController');
-const { protect } = require('../middleware/authMiddleware');
 
-router.get("/", bookController.getAllBooks);
-router.get("/:id", bookController.getBookById);
-
-// Protect the routes that require authentication
-router.post("/", protect, bookController.addBook);
-router.put("/:id", protect, bookController.updateBook);
-router.delete("/:id", protect, bookController.deleteBook);
+router.route("/").get(getAllBooks).post(protect, addBook);
+router.route("/:id").get(getBookById).put(protect, updateBook).delete(protect, deleteBook);
 
 module.exports = router;
