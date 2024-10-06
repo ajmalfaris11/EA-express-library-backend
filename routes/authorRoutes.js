@@ -1,11 +1,16 @@
 const express = require("express");
-const router = express.Router();
-const authorController = require("../controllers/authorController");
+const {
+  getAllAuthors,
+  getAuthorById,
+  addAuthor,
+  updateAuthor,
+  deleteAuthor,
+} = require("../controllers/authorController");
+const { protect } = require("../middleware/authMiddleware");
 
-router.get("/", authorController.getAllAuthors);
-router.get("/:id", authorController.getAuthorById);
-router.post("/", authorController.addAuthor);
-router.put("/:id", authorController.updateAuthor);
-router.delete("/:id", authorController.deleteAuthor);
+const router = express.Router();
+
+router.route("/").get(getAllAuthors).post(protect, addAuthor);
+router.route("/:id").get(getAuthorById).put(protect, updateAuthor).delete(protect, deleteAuthor);
 
 module.exports = router;
