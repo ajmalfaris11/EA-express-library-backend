@@ -1,68 +1,69 @@
 const Author = require("../models/author");
 
-// Get all authors
-exports.getAllAuthors = async (req, res) => {
-  try {
-    const authors = await Author.find();
-    res.json(authors);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+// @desc    Get all authors
+// @route   GET /api/authors
+// @access  Public
+const getAllAuthors = async (req, res) => {
+  const authors = await Author.find();
+  res.json(authors);
+};
+
+// @desc    Get author by ID
+// @route   GET /api/authors/:id
+// @access  Public
+const getAuthorById = async (req, res) => {
+  const author = await Author.findById(req.params.id);
+  if (author) {
+    res.json(author);
+  } else {
+    res.status(404).json({ message: "Author not found" });
   }
 };
 
-// Get author by ID
-exports.getAuthorById = async (req, res) => {
-  try {
-    const author = await Author.findById(req.params.id);
-    if (author) {
-      res.json(author);
-    } else {
-      res.status(404).json({ message: "Author not found" });
-    }
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+// @desc    Add a new author
+// @route   POST /api/authors
+// @access  Private
+const addAuthor = async (req, res) => {
+  const { name, biography } = req.body;
+  const author = new Author({ name, biography });
+  const createdAuthor = await author.save();
+  res.status(201).json(createdAuthor);
+};
+
+// @desc    Update author details
+// @route   PUT /api/authors/:id
+// @access  Private
+const updateAuthor = async (req, res) => {
+  const { name, biography } = req.body;
+  const author = await Author.findById(req.params.id);
+  if (author) {
+    author.name = name;
+    author.biography = biography;
+
+    const updatedAuthor = await author.save();
+    res.json(updatedAuthor);
+  } else {
+    res.status(404).json({ message: "Author not found" });
   }
 };
 
-// Add a new author
-exports.addAuthor = async (req, res) => {
-  const newAuthor = new Author({
-    name: req.body.name
-  });
-  try {
-    const savedAuthor = await newAuthor.save();
-    res.status(201).json(savedAuthor);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
+// @desc    Delete an author
+// @route   DELETE /api/authors/:id
+// @access  Private
+const deleteAuthor = async (req, res) => {
+  const author = await Author.findById(req.params.id);
+  if (author) {
+    await author.remove();
+    res.json({ message: "Author removed" });
+  } else {
+    res.status(404).json({ message: "Author not found" });
   }
 };
 
-// Update an author
-exports.updateAuthor = async (req, res) => {
-  try {
-    const author = await Author.findById(req.params.id);
-    if (author) {
-      author.name = req.body.name || author.name;
-      const updatedAuthor = await author.save();
-      res.json(updatedAuthor);
-    } else {
-      res.status(404).json({ message: "Author not found" });
-    }
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
-
-// Delete an author
-exports.deleteAuthor = async (req, res) => {
-  try {
-    const deletedAuthor = await Author.findByIdAndDelete(req.params.id);
-    if (deletedAuthor) {
-      res.json({ message: "Author deleted" });
-    } else {
-      res.status(404).json({ message: "Author not found" });
-    }
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
+module.exports = {
+  getAllAuthors,
+  getAuthorById,
+  addAuthor,
+  updateAuthor,
+  deleteAuthor,
 };
